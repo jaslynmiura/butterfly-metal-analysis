@@ -99,3 +99,4 @@ ggplot(data = plant_summary, aes(x = factor(site.number), y = average_pb)) +
 
 ```
 
+Average lead concentration of plants at each site. Can be joined to the butterfly data, to see how lead concentration in plants is related to the lead concentration in butterflies.

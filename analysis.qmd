@@ -1,0 +1,100 @@
+---
+title: "Final Project"
+author: "Jaslyn Miura"
+format: html
+---
+
+```{r}
+library(tidyverse)
+library(janitor)
+```
+
+
+```{r}
+butterfly_metal <- read_csv(here::here("data", "butterfly_metals_v1.csv"))
+wings <- read_csv(here::here("data", "butterfly-wings.csv"))
+brain <- read_csv(here::here("data", "butterfly_brain.csv"))
+
+plant <- read_csv(here::here("data", "plant_data_v1.csv"))
+site <- read_csv(here::here("data", "site_info.csv"))
+soil <- read_csv(here::here("data", "soil_data_v1.csv"))
+
+mammals <- read_csv(here::here("mammal_hvy_metals_by_pop_withGUIDs.csv"))
+walrus <- read_csv(here::here("walrus_morphology_chukchiBering_1972-1991.csv"))
+```
+
+
+```{r}
+# joining dataframes and cleaning data
+joined1 <- left_join(butterfly_metal, wings, by = "unique_ID")
+
+joined2 <- left_join(brain, joined1, by = "unique_ID")
+
+species <- joined2 %>%  
+  select(c("species", "brain.mass", "Butterfly.tissue.wt.g", "wing_length", "wing_area", "wing_perimeter", "Pb.tis.ppb")) %>% 
+  clean_names()
+
+```
+
+```{r}
+# removing suspected outlier observations
+species <- species[!(species$pb_tis_ppb > 250), ]
+species <- species %>% 
+  filter(species != c("Danaus plexippus"))
+```
+
+
+```{r}
+# scatterplot of Wing Area by Lead concentration
+ggplot(data = species, aes(x = pb_tis_ppb, y = wing_area, color = species)) +
+  geom_jitter() +
+  labs(x = "Pb parts per billion (ppb)",
+       y = "Wing Area mm^2",
+       title = "Wing Area by Lead concentration",
+       color = "Species") +
+  theme_minimal()
+
+```
+
+```{r}
+# scatterplot of Brain Mass by Lead Concentration
+ggplot(data = species, aes(x = pb_tis_ppb, y = brain_mass, color = species)) +
+  geom_jitter() +
+  labs(x = "Pb parts per billion (ppb)",
+       y = "Brain Mass (mg)",
+       title = "Brain Mass by Lead Concentration",
+       color = "Species") +
+  theme_minimal()
+```
+
+```{r}
+# scatterplot of Tissue Weight by Lead Concentration
+ggplot(data = species, aes(x = pb_tis_ppb, y = butterfly_tissue_wt_g, color = species)) +
+  geom_jitter() +
+  labs(x = "Pb parts per billion (ppb)",
+       y = "Tissue Weight (g)",
+       title = "Tissue Weight by Lead Concentration",
+       color = "Species") +
+  theme_minimal()
+
+```
+```{r}
+# calculating the average lead concentration in plants at the different sites
+plant_summary <- plant %>% 
+  group_by(site.number) %>% 
+  summarise(average_pb = mean(Pb, na.rm = TRUE))
+```
+
+
+```{r}
+
+# bar graph of the average lead concentration in plants
+ggplot(data = plant_summary, aes(x = factor(site.number), y = average_pb)) +
+  geom_col() +
+  labs(x = "Site Number", 
+       y = "Average Pb concentration (ppb)",
+       title = "Average Pb Concentration in plants at each site") +
+  theme_minimal()
+
+```
+

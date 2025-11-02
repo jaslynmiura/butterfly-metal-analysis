@@ -78,13 +78,14 @@ ggplot(data = species, aes(x = pb_tis_ppb, y = butterfly_tissue_wt_g, color = sp
   theme_minimal()
 
 ```
+The three plots above were made to visualize the relationship between the predictor and response variables. Our predictor variable is lead as the heavy metal. Within this model, there could be multiple response variables. I mapped three different response variables to visualize a relationship. These plots also consider the species type. Next I want to incorporate the average lead concentration of plants and see if that has an influence on butterfly body make-up. The next step is relating the plant/site data to the butterfly data so then I can relate the lead concentration proportions in plants to the lead concentration proportions in butterflies. To make the model more complex, I could also consider the plant species to determine if the different plant types have higher levels of lead. While also seeing if there is a relationship between butterfly body make-up, lead concentrations, and plant species.
+
 ```{r}
 # calculating the average lead concentration in plants at the different sites
 plant_summary <- plant %>% 
   group_by(site.number) %>% 
   summarise(average_pb = mean(Pb, na.rm = TRUE))
 ```
-
 
 ```{r}
 
